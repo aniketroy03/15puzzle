@@ -21,8 +21,54 @@ function shuffle() {
   return array;
 }
 
+// Timer function
+const minutesElement = document.getElementById("minutes");
+const secondsElement = document.getElementById("seconds");
+
+let timer;
+let running = false;
+let seconds = 0;
+let minutes = 0;
+
+// Function to update the stopwatch display
+function updateDisplay() {
+  secondsElement.textContent = seconds.toString().padStart(2, "0");
+  minutesElement.textContent = minutes.toString().padStart(2, "0");
+}
+
+// Function to reset the stopwatch
+function reset() {
+  clearInterval(timer);
+  running = false;
+  seconds = 0;
+  minutes = 0;
+  updateDisplay();
+}
+
+// Function to start or stop the stopwatch
+function toggleStartStop() {
+  if (running) {
+    clearInterval(timer);
+  } else {
+    timer = setInterval(() => {
+      seconds += 1;
+      if (seconds >= 60) {
+        seconds = 0;
+        minutes++;
+      }
+      updateDisplay();
+    }, 1000);
+  }
+  running = !running;
+}
+
+// Event listeners
+// startStopBtn.addEventListener("click", toggleStartStop);
+// resetBtn.addEventListener("click", reset);
+
 // init
 const init = function () {
+  reset();
   const shuffledBoxes = shuffle();
 
   let index = 0;
@@ -37,6 +83,7 @@ const init = function () {
       index += 1;
     }
   }
+  toggleStartStop();
 };
 init();
 //
@@ -84,6 +131,30 @@ for (let i = 0; i < 4; i++) {
           clickedBox.textContent = "";
         }
       }
+
+      // Check for winning
+      let count = 1;
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          // console.log(boxes[j][i].textContent);
+          if (Number(boxes[j][i].textContent) === count) {
+            count++;
+          } else {
+            break;
+          }
+        }
+      }
+      if (count - 1 === 15) {
+        for (let i = 0; i < 4; i++) {
+          for (let j = 0; j < 4; j++) {
+            if (i === 3 && j === 4) break;
+            boxes[i][j].classList.add("win");
+          }
+        }
+        toggleStartStop();
+      }
     });
   }
 }
+
+// Rollback
